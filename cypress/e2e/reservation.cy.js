@@ -128,6 +128,16 @@ describe('reservation form', () => {
     });
 
     it('reservation not possible when time is already reserved', () => {
+        // Intercept POST for the first reservation step and return that it is already reserved
+        cy.intercept('POST', 'https://dev.automycka.cz/rezervace-1/', (req) => {
+            const formData = new URLSearchParams(req.body);
+            tokenStep1 = formData.get('reservation[_token]');
+            req.reply({
+                statusCode: 200,
+                fixture: 'term_is_full.html'
+            });
+        }).as('reservationPost');
+
         // Selecting PALADIUM as branch
         cy.get('[data-rel="reservation[branch_id]"]').click();
         cy.get('[data-name="reservation[branch_id]"]').within(() => {

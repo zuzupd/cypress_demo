@@ -1,0 +1,82 @@
+<form name="reservation_time" method="post" action="/rezervace-1/" class="generic-form" id="reservation_form" data-back-url="/rezervace-1/">
+
+                                
+    <header>
+        <h2 class="heading">Rezervace</h2>
+        <a class="link-back" onclick="document.getElementById('reservation_form').reset();">
+            <svg width="7" height="12" viewBox="0 0 7 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 0L5 5L10 0" transform="translate(6 1) rotate(90)" stroke="#828282" stroke-width="2" stroke-linejoin="bevel"/>
+            </svg>
+            Zpět            </a>
+    </header>
+    <p>
+        Omlouváme se, termín je již obsazen.<br><big>Nejbližší volný termín je:</big>        </p>
+    <fieldset>
+        <div>
+                <div class="form-group">
+    <input
+            type="text"
+            class="form-input custom-select"
+            data-rel="reservation_time[reservation_at]"
+             placeholder="Vyberte čas" class="form-input custom-select" readonly="readonly"        />
+
+    <div class="selectList" data-name="reservation_time[reservation_at]">
+        <div class="ps ps--active-y">
+            <ul>
+                                        <li>
+                        <input
+                                type="radio"
+                                name="reservation_time[reservation_at]"
+                                value="15. 5. 2025 | 11:15"
+                                id="reservation_time_reservation_at_15. 5. 2025 | 11:15"
+                                                            />
+                        <label for="reservation_time_reservation_at_15. 5. 2025 | 11:15">15. 5. 2025 | 11:15</label>
+                    </li>
+                                        <li>
+                        <input
+                                type="radio"
+                                name="reservation_time[reservation_at]"
+                                value="15. 5. 2025 | 11:45"
+                                id="reservation_time_reservation_at_15. 5. 2025 | 11:45"
+                                                            />
+                        <label for="reservation_time_reservation_at_15. 5. 2025 | 11:45">15. 5. 2025 | 11:45</label>
+                    </li>
+                                        <li>
+                        <input
+                                type="radio"
+                                name="reservation_time[reservation_at]"
+                                value="15. 5. 2025 | 12:15"
+                                id="reservation_time_reservation_at_15. 5. 2025 | 12:15"
+                                                            />
+                        <label for="reservation_time_reservation_at_15. 5. 2025 | 12:15">15. 5. 2025 | 12:15</label>
+                    </li>
+                                </ul>
+            <div class="ps__rail-x" style="left: 0px; bottom: 0px;">
+                <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div>
+            </div>
+            <div class="ps__rail-y" style="top: 0px; height: 291px; right: 0px;">
+                <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 15px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <svg class="icon-calendar">
+        <use xlink:href="#icon-calendar"></use>
+    </svg>
+</div>
+
+            <div class="buttonWrap">
+                <button type="submit" class="btn" id="reservation_submit">Potvrdit</button>
+            </div>
+            <div class="phone-logo">
+                <div>
+                    nebo kontaktujte pobočku<br>
+                                                                    <span class="phone">+420 773 112 200</span>
+                </div>
+                <img src="/uploads/image/branch/logo/52.png" alt="Palladium">
+            </div>
+        </div>
+    </fieldset>
+
+
+<input type="hidden" id="reservation_time__token" name="reservation_time[_token]" value="CCXL1TeW3ApPEwOAdnDvMEDy8Fo9oLhO6_akfDajNYk" /></form>
