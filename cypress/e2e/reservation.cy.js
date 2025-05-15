@@ -1,7 +1,6 @@
 describe('reservation form', () => {
     let tokenStep1 = '';
     let tokenStep2 = '';
-    let tokenStep3 = ''; // kept in case you want to store it - not used later
 
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -13,37 +12,6 @@ describe('reservation form', () => {
     });
 
     it('successful reservation', () => {
-        // Selecting branch
-        cy.get('[data-rel="reservation[branch_id]"]').click();
-        cy.get('[data-name="reservation[branch_id]"]').within(() => {
-            cy.get('label[for="branch_id_16"]')
-              .should('be.visible')
-              .click();
-        });
-
-        // Selecting tomorrow's date morning
-        cy.get('#reservation_reservation_at').click();
-        cy.get('.bootstrap-datetimepicker-widget')
-          .should('be.visible')
-          .within(() => {
-            cy.get('[data-action="tomorrow"]')
-              .should('be.visible')
-              .wait(500)
-              .click();
-            cy.get('[data-action="close"]')
-              .should('be.visible')
-              .wait(500)
-              .click();
-          });
-
-        // Selecting Shine program
-        cy.get('[data-rel="reservation[program_id]"]').click();
-        cy.get('[data-name="reservation[program_id]"]').within(() => {
-            cy.get('label[for="program_id_1333"]')
-              .should('be.visible')
-              .click();
-        });
-
         // Intercept POST for the first reservation step
         cy.intercept('POST', 'https://dev.automycka.cz/rezervace-1/', (req) => {
             const formData = new URLSearchParams(req.body);
@@ -92,6 +60,35 @@ describe('reservation form', () => {
             });
         }).as('reservationConfirmation');
 
+        // Selecting branch
+        cy.get('[data-rel="reservation[branch_id]"]').click();
+        cy.get('[data-name="reservation[branch_id]"]').within(() => {
+            cy.get('label[for="branch_id_16"]')
+              .should('be.visible')
+              .click();
+        });
+
+        // Selecting tomorrow's date morning
+        cy.get('#reservation_reservation_at').click();
+        cy.get('.bootstrap-datetimepicker-widget')
+          .should('be.visible')
+          .within(() => {
+            cy.get('[data-action="tomorrow"]')
+              .should('be.visible')
+              .click();
+            cy.get('[data-action="close"]')
+              .should('be.visible')
+              .click();
+          });
+
+        // Selecting Shine program
+        cy.get('[data-rel="reservation[program_id]"]').click();
+        cy.get('[data-name="reservation[program_id]"]').within(() => {
+            cy.get('label[for="program_id_1333"]')
+              .should('be.visible')
+              .click();
+        });
+
         // Sending first form (this triggers the POST to /rezervace-1/)
         cy.get('button[type="submit"]').click();
 
@@ -122,7 +119,103 @@ describe('reservation form', () => {
         
         cy.wait('@reservationSummaryPost');
 
-        // Now, check that the confirmation GET returns our simulated page
+        // GET returns simulated page
         cy.wait('@reservationConfirmation');
+
+        cy.get('.confirmation').within(() => {
+            cy.get('p').contains('Děkujeme za objednávku')
+        })
     });
+
+    it('reservation not possible when time is already reserved', () => {
+        // Selecting PALADIUM as branch
+        cy.get('[data-rel="reservation[branch_id]"]').click();
+        cy.get('[data-name="reservation[branch_id]"]').within(() => {
+            cy.get('label[for="branch_id_52"]')
+              .should('be.visible')
+              .click();
+        });
+
+        // Selecting today's date morning
+        cy.get('#reservation_reservation_at').click();
+        cy.get('.bootstrap-datetimepicker-widget')
+          .should('be.visible')
+          .within(() => {
+            cy.get('[data-action="today"]')
+              .should('be.visible')
+              .click();
+            cy.get('[data-action="close"]')
+              .should('be.visible')
+              .click();
+          });
+
+        // Selecting Shine program
+        cy.get('[data-rel="reservation[program_id]"]').click();
+        cy.get('[data-name="reservation[program_id]"]').within(() => {
+            cy.get('label[for="program_id_1333"]')
+              .should('be.visible')
+              .click();
+        });
+
+        // Submit first step
+        cy.get('button[type="submit"]').click();
+
+        // Check registration is not possible due to term not free
+        cy.get('#reservation_form').within(() => {
+            cy.get('p').contains('Omlouváme se, termín je již obsazen.')
+        })
+    })
+    
+    it('reservation without filling contact information is not possible', () => {
+        // Selecting branch
+        cy.get('[data-rel="reservation[branch_id]"]').click();
+        cy.get('[data-name="reservation[branch_id]"]').within(() => {
+            cy.get('label[for="branch_id_16"]')
+              .should('be.visible')
+              .click();
+        });
+
+        // Selecting tomorrow's date morning
+        cy.get('#reservation_reservation_at').click();
+        cy.get('.bootstrap-datetimepicker-widget')
+          .should('be.visible')
+          .within(() => {
+            cy.get('[data-action="tomorrow"]')
+              .should('be.visible')
+              .click();
+            cy.get('[data-action="close"]')
+              .should('be.visible')
+              .click();
+          });
+
+        // Selecting Shine program
+        cy.get('[data-rel="reservation[program_id]"]').click();
+        cy.get('[data-name="reservation[program_id]"]').within(() => {
+            cy.get('label[for="program_id_1333"]')
+              .should('be.visible')
+              .click();
+        });
+
+        // Confirm first step of registration
+        cy.get('button[type="submit"]').click();
+        
+        // Second step of registration should be visible
+        cy.get('#reservation_finalize_customer_name').should('be.visible')
+
+        cy.get('#reservation_submit').click();
+    
+        // Expecting an error class because the contact information is not filled
+        cy.get('#reservation_finalize_customer_name')
+          .parent()
+          .should('have.class', 'error');
+        cy.get('#reservation_finalize_customer_surname')
+          .parent()
+          .should('have.class', 'error');
+        cy.get('#reservation_finalize_customer_phone_number')
+          .parent()
+          .should('have.class', 'error');
+        cy.get('#reservation_finalize_customer_email')
+          .parent()
+          .should('have.class', 'error');
+    })
 });
